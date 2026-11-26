@@ -1,7 +1,34 @@
 import numpy as np
 
 def sgd(F,X,C,W0,lr,batch_size,num_epochs,Xv=None,Cv=None,acc_fn=None,subsample_size=None,lr_decay=1.0,seed=None,):
-    
+    """_summary_
+    Mini Batch Stochastic Gradient Decent optimiser
+    This function minimizes a generic objective F(X_batch, C_batch, W) -> (loss, grad) over
+    mini-batches of columns from X and C. With options for
+    1) validation logging 
+    2) random sampaling 
+    3) exponential LR decay
+    Args:
+        F (callable): function with structure F(X_batch, C_batch, W) -> (loss, grad) 
+        we wish to minimize
+        X (np.ndarray , shape(n,m)):training input matrix n features including bias row, m samples
+        C (np.ndarray , shape(l,m)): training target matrix l classes/outputs, m samples
+        W0 (np.ndarray , shape(n,l)): initial weight matrix
+        lr (float): initial learning rate
+        batch_size (int): number of samples per mini-batch gradient update
+        num_epochs (int): number of full passes over the training set
+        Xv (np.ndarray, optional): validation inputs (n, m_v) and targets (l, m_v). Defaults to None.
+        Cv (np.ndarray, optional): validation inputs (n, m_v) and targets (l, m_v). Defaults to None.
+        acc_fn (callable, optional): metric function acc_fn(X_eval, C_eval, W) -> float returning accuracy (%) Defaults to None.
+        subsample_size (int, optional): when set and set tosmaller than dataset size, evaluates epoch loss/accuracy on a
+        random subset of this size to avoid full-dataset passes every epoch. Defaults to None.
+        lr_decay (float, default=1.0): learnign decay factor mulitpliy the learning rate after each epoch. Defaults to 1.0.
+        seed (int, optional): ranodm seed for reprodicable results. Defaults to None.
+
+    Returns:
+        W : np.ndarray, shape (n, l) , learend weight matrix after num_epochs number of epochs
+        history : dict[str, list[float]] , Per-epoch logs for 'train_loss', 'val_loss', 'train_acc', and 'val_acc'
+    """
     rng = np.random.default_rng(seed)
     W = W0.copy().astype(float)
     m = X.shape[1]
