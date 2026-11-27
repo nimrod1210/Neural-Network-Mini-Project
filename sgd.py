@@ -5,9 +5,9 @@ def sgd(F,X,C,W0,lr,batch_size,num_epochs,Xv=None,Cv=None,acc_fn=None,subsample_
     Mini Batch Stochastic Gradient Decent optimiser
     This function minimizes a generic objective F(X_batch, C_batch, W) -> (loss, grad) over
     mini-batches of columns from X and C. With options for
-    1) validation logging 
-    2) random sampaling 
-    3) exponential LR decay
+    (1) validation logging 
+    (2) random sampaling 
+    (3) exponential LR decay
     Args:
         F (callable): function with structure F(X_batch, C_batch, W) -> (loss, grad) 
         we wish to minimize
@@ -29,12 +29,17 @@ def sgd(F,X,C,W0,lr,batch_size,num_epochs,Xv=None,Cv=None,acc_fn=None,subsample_
         W : np.ndarray, shape (n, l) , learend weight matrix after num_epochs number of epochs
         history : dict[str, list[float]] , Per-epoch logs for 'train_loss', 'val_loss', 'train_acc', and 'val_acc'
     """
-    rng = np.random.default_rng(seed)
-    W = W0.copy().astype(float)
-    m = X.shape[1]
-    current_lr = lr
+    rng = np.random.default_rng(seed)#create an isolated numpy random generator
+    #so the random shuffling (the manner shuffleing is preformed not that the reasoning for us
+    # to put it in the code is random) doesnt intefere with other random states
+    #like for the subsample option
+    W = W0.copy().astype(float)#clone the W0 so we could use it for claculations without
+    #loosing the original
+    m = X.shape[1]#total number of training samples (number of columns)
+    current_lr = lr#starting step size or learning rate
 
     history = {"train_loss": [], "val_loss": [], "train_acc": [], "val_acc": []}
+    #runs one full pass over the training set per iteration.
     for _ in range(num_epochs):
         # Shuffle the data
         indices = np.random.permutation(X.shape[1])
